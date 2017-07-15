@@ -12,4 +12,6 @@ class MangaTorrentItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     torrent_url = scrapy.Field()
-    downloaded = scrapy.Field()
+    cookies = scrapy.Field()
+    title = scrapy.Field()
+    file_paths = scrapy.Field()

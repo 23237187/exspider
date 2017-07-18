@@ -6,15 +6,18 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 import scrapy
-import pprint
+import logging
+import json
 
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.exceptions import DropItem
+from scrapy.utils.project import get_project_settings
 
 
 class ExspiderPipeline(FilesPipeline):
+
     def get_media_requests(self, item, info):
-        print(item)
+        # print(item)
         yield scrapy.Request(item['torrent_url'],
                               meta={
                                   'cookiejar': item['cookies'],

@@ -17,6 +17,8 @@ class TorrentSpider(scrapy.Spider):
         self.last_date = rule['last_date']
         self.new_date = self.last_date
 
+
+
     def start_requests(self):
         print("Sending Login Information...")
         return [scrapy.FormRequest(
@@ -37,55 +39,28 @@ class TorrentSpider(scrapy.Spider):
             dont_filter=True
         )]
 
-    # def second_login(self, response):
-    #     print("Requeting aticle list by query condition....")
-    #
-    #     return [scrapy.Request(
-    #         "https://exhentai.org/?page={0}&f_doujinshi={1}&f_manga={2}&f_artistcg={3}&f_gamecg={4}&f_western={5}&f_non-h={6}&f_imageset={7}&f_cosplay={8}&f_asianporn={9}&f_misc={10}&f_search={11}&f_apply=Apply+Filter&inline_set=dm_l"
-    #         .format(self.rule['start_page'] - 1,
-    #                 self.rule['doujinshi'],
-    #                 self.rule['manga'],
-    #                 self.rule['artist_cg'],
-    #                 self.rule['game_cg'],
-    #                 self.rule['western'],
-    #                 self.rule['non_h'],
-    #                 self.rule['image_set'],
-    #                 self.rule['cosplay'],
-    #                 self.rule['asian_porn'],
-    #                 self.rule['misc'],
-    #                 self.rule['keyword']),
-    #         meta={'cookiejar': response.meta['cookiejar']}
-    #     )]
-
     def second_login(self, response):
         print("Requeting aticle list by query condition....")
 
         return [scrapy.Request(
-            "https://exhentai.org/?page=0&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&f_western=on&f_non-h=on&f_imageset=on&f_cosplay=on&f_asianporn=on&f_misc=on&f_search=chinese&f_apply=Apply+Filter&inline_set=dm_l"
-            ,
+            "https://exhentai.org/?page={0}&f_doujinshi={1}&f_manga={2}&f_artistcg={3}&f_gamecg={4}&f_western={5}&f_non-h={6}&f_imageset={7}&f_cosplay={8}&f_asianporn={9}&f_misc={10}&f_search={11}&f_apply=Apply+Filter&inline_set=dm_l"
+            .format(self.rule['start_page'] - 1,
+                    self.rule['doujinshi'],
+                    self.rule['manga'],
+                    self.rule['artist_cg'],
+                    self.rule['game_cg'],
+                    self.rule['western'],
+                    self.rule['non_h'],
+                    self.rule['image_set'],
+                    self.rule['cosplay'],
+                    self.rule['asian_porn'],
+                    self.rule['misc'],
+                    self.rule['keyword']),
             meta={'cookiejar': response.meta['cookiejar']}
         )]
 
-    # def parse(self, response):
-    #     articles = response.css('.it5 a::attr(href)').extract()
-    #     next_page_url = response.xpath('//table[@class="ptt"]/tr/td[last()]/a/@href').extract_first()
-    #     print(articles)
-    #
-    #     for article in articles:
-    #         print(article)
-    #         yield scrapy.Request(article,
-    #                              callback=self.parse_article,
-    #                              meta={'cookiejar': response.meta['cookiejar']})
-    #
-    #     if next_page_url != None and self.page < (self.rule['end_page'] - self.rule['strat_page'] + 1):
-    #         self.page += 1
-    #         print('Loading Page:' + str(self.page))
-    #         print('next:' + next_page_url)
-    #         yield scrapy.Request(next_page_url,
-    #                              callback=self.parse,
-    #                              meta={'cookiejar': response.meta['cookiejar']})
-
     def parse(self, response):
+        print("Parsing artical list page..")
         articles = response.css('.it5 a::attr(href)').extract()
         next_page_url = response.xpath('//table[@class="ptt"]/tr/td[last()]/a/@href').extract_first()
         print(articles)
@@ -96,13 +71,14 @@ class TorrentSpider(scrapy.Spider):
                                  callback=self.parse_article,
                                  meta={'cookiejar': response.meta['cookiejar']})
 
-        if next_page_url != None and self.page < (1):
+        if next_page_url != None and self.page < (self.rule['end_page'] - self.rule['start_page'] + 1):
             self.page += 1
             print('Loading Page:' + str(self.page))
             print('next:' + next_page_url)
             yield scrapy.Request(next_page_url,
                                  callback=self.parse,
                                  meta={'cookiejar': response.meta['cookiejar']})
+
 
 
     def parse_article(self, response):

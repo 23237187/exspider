@@ -15,3 +15,4 @@ class MangaTorrentItem(scrapy.Item):
     cookies = scrapy.Field()
     title = scrapy.Field()
     file_paths = scrapy.Field()
+    post_time = scrapy.Field()

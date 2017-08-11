@@ -103,10 +103,13 @@ class TorrentSpider(scrapy.Spider):
         # print(torrent_url)
         urlre = re.compile(r'\'(.*?)\'')
         torrent_popup_window_url = urlre.search(torrent_url).group(1).strip()
+        posted_str = posted_date.strftime("%Y-%m-%d-%H-%M")
+
 
         yield scrapy.Request(torrent_popup_window_url,
                              callback=self.parse_torrent_window,
-                             meta={'cookiejar': response.meta['cookiejar']})
+                             meta={'cookiejar': response.meta['cookiejar'],
+                                   'post_time':posted_str})
 
     def parse_torrent_window(self, response):
         print("Parsing torrent window")
@@ -136,6 +139,7 @@ class TorrentSpider(scrapy.Spider):
         item['torrent_url'] = max_seed_url
         item['cookies'] = response.meta['cookiejar']
         item['title'] = max_seed_title
+        item['post_time'] = response.meta['post_time']
 
         print(item['torrent_url'] )
 

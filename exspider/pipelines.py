@@ -21,7 +21,8 @@ class ExspiderPipeline(FilesPipeline):
         yield scrapy.Request(item['torrent_url'],
                               meta={
                                   'cookiejar': item['cookies'],
-                                  'title': item['title']
+                                  'title': item['title'],
+                                  'post_time': item['post_time']
                               }
                              )
 
@@ -35,6 +36,7 @@ class ExspiderPipeline(FilesPipeline):
 
     def file_path(self, request, response=None, info=None):
         title = request.meta['title']
-        file_guid = title + '.' + request.url.split('/')[-1].split('?')[0].split('.')[1]
+        post_time = request.meta['post_time']
+        file_guid = post_time + '_' + title + '.' + request.url.split('/')[-1].split('?')[0].split('.')[1]
         filename = u'{0}'.format(file_guid)
         return filename

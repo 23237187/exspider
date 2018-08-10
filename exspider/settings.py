@@ -54,7 +54,10 @@ CONCURRENT_REQUESTS_PER_IP = 16
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+
     'exspider.middlewares.RotateUserAgentMiddleware': 400,
+    #'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 510,
+    #'exspider.middlewares.ProxyMiddleware': 100,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None
 }
 

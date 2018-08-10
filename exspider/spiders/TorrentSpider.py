@@ -22,10 +22,11 @@ class TorrentSpider(scrapy.Spider):
     def start_requests(self):
         print("Sending Login Information...")
         return [scrapy.FormRequest(
-            "http://forums.e-hentai.org/index.php?act=Login&CODE=01&CookieDate=1",
+            "https://forums.e-hentai.org/index.php?act=Login&CODE=01",
             meta={'cookiejar': 1},
             formdata={'UserName': self.username,
-                      'PassWord': self.password},
+                      'PassWord': self.password,
+                      'CookieDate': '1'},
             callback=self.first_login,
             dont_filter=True
         )]
@@ -63,7 +64,7 @@ class TorrentSpider(scrapy.Spider):
         print("Parsing artical list page..")
         articles = response.css('.it5 a::attr(href)').extract()
         next_page_url = response.xpath('//table[@class="ptt"]/tr/td[last()]/a/@href').extract_first()
-        print(articles)
+        # print(articles)
 
         for article in articles:
             print(article)
@@ -74,6 +75,8 @@ class TorrentSpider(scrapy.Spider):
         if next_page_url != None and self.page < (self.rule['end_page'] - self.rule['start_page'] + 1):
             self.page += 1
             print('Loading Page:' + str(self.page))
+
+
             print('next:' + next_page_url)
             yield scrapy.Request(next_page_url,
                                  callback=self.parse,
@@ -87,6 +90,7 @@ class TorrentSpider(scrapy.Spider):
         posted_date = datetime.strptime(posted_str, "%Y-%m-%d %H:%M")
         last_date = datetime.strptime(self.last_date, "%Y-%m-%d %H:%M")
         if posted_date < last_date:
+            print(posted_str + posted_date + ':' + last_date)
             return
 
         torrent_header = response.xpath('//*[@id="gd5"]/p[3]/a/text()').extract_first()
@@ -94,6 +98,7 @@ class TorrentSpider(scrapy.Spider):
         torrent_num = ast.literal_eval(thre.search(torrent_header).group(1).strip())
 
         if torrent_num < 0:
+            print(posted_str + posted_date + ':' + '0')
             return
 
         if posted_date > datetime.strptime(self.new_date, "%Y-%m-%d %H:%M"):
@@ -116,7 +121,7 @@ class TorrentSpider(scrapy.Spider):
         torrent_table_list = response.xpath('//table')
 
         max_seed_url = ""
-        max_seed_num = 0
+        max_seed_num = -1
         max_seed_title = ""
 
         for index, torrent_table in enumerate(torrent_table_list):

@@ -28,7 +28,7 @@ class ExspiderPipeline(FilesPipeline):
 
     def item_completed(self, results, item, info):
         file_paths = [x['path'] for ok, x in results if ok]
-        print(results)
+        #print(results)
         if not file_paths:
             raise DropItem("Item contains no Files")
         item['file_paths'] = file_paths
